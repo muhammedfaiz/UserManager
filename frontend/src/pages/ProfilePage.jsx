@@ -43,7 +43,7 @@ const ProfilePage = () => {
       setFormToggle(false);
       navigate("/profile");
     }
-  }, [ isSuccess, error, navigate]);
+  }, [isSuccess, error, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -62,11 +62,26 @@ const ProfilePage = () => {
         <div className="max-w-sm mx-auto bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-lg">
           <div className="border-b px-4 pb-6">
             <div className="text-center my-4">
-              <img
-                className="h-32 w-32 rounded-full border-4 border-white dark:border-gray-800 mx-auto my-4"
-                src={`http://localhost:8000/uploads/${user.image}`}
-                alt="profile"
-              />
+              {user.image ? (
+                <img
+                  className="h-32 w-32 rounded-full border-4 border-white dark:border-gray-800 mx-auto my-4"
+                  src={`http://localhost:8000/uploads/${user.image}`}
+                  alt="profile"
+                />
+              ) : (
+                <div className="flex justify-center mx-auto m-5">
+                  <svg
+                  width="30"
+                  fill="currentColor"
+                  height="30"
+                  className="dark:text-white text-black"
+                  viewBox="0 0 1792 1792"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M1523 1339q-22-155-87.5-257.5t-184.5-118.5q-67 74-159.5 115.5t-195.5 41.5-195.5-41.5-159.5-115.5q-119 16-184.5 118.5t-87.5 257.5q106 150 271 237.5t356 87.5 356-87.5 271-237.5zm-243-699q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm512 256q0 182-71 347.5t-190.5 286-285.5 191.5-349 71q-182 0-348-71t-286-191-191-286-71-348 71-348 191-286 286-191 348-71 348 71 286 191 191 286 71 348z"></path>
+                </svg>
+                </div>
+              )}
               <div className="py-2">
                 <h3 className="font-bold text-2xl text-gray-800 dark:text-white mb-1">
                   {user.name}
@@ -86,7 +101,7 @@ const ProfilePage = () => {
                 Edit
               </button>
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
                 className="flex-1 rounded-full bg-white text-dark dark:text-dark antialiased font-bold hover:bg-gray-300 dark:hover:bg-gray-500 px-4 py-2"
               >
                 Home

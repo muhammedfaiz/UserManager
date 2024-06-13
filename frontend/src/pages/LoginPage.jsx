@@ -1,40 +1,64 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom";
 import Progress from "../components/Progress";
 import { login } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
 
 const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const dispatch = useDispatch();
-    const {user,isLoading,isSuccess,error} = useSelector(store=>store.auth);
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  const { user, isLoading, isSuccess, error } = useSelector(
+    (store) => store.auth
+  );
+  const navigate = useNavigate();
 
-    useEffect(()=>{
-      if(error||!user){
-        toast.error(error.message);
-        return;
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    if (isSuccess) {
+      if (user.isAdmin===true) {
+        toast.success("Admin Login successful");
+        navigate("/admin/dashboard");
+      } 
+      if(user.isAdmin===false) {
+        toast.success("User Login successful");
+        navigate("/");
       }
-      if(isSuccess||user){
-        if(user.isAdmin){
-          toast.success("Admin Login successfull");
-          navigate("/admin/dashboard");
-        }else{
-          toast.success("User Login successfull");
-          navigate("/");
-        }
-      }
-    },[user,isSuccess,error,navigate])
+    }
+  }, [user, isSuccess, error, navigate]);
 
-    const submitHandler = (e)=>{
-      e.preventDefault();
-      const userData = {email,password};
+  const validate = () => {
+    const errors = {};
+    if (!email) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Email address is invalid";
+    }
+    if (!password) {
+      errors.password = "Password is required";
+    } else if (password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
+    return errors;
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      setErrors({});
+      const userData = { email, password };
       dispatch(login(userData));
     }
+  };
 
-    
   return (
     <div className="flex justify-center items-center h-screen dark:bg-gray-700">
       <div className="flex flex-col w-full max-w-md px-4 py-8 bg-white rounded-lg shadow dark:bg-gray-800 sm:px-6 md:px-8 lg:px-10">
@@ -44,8 +68,8 @@ const LoginPage = () => {
         <div className="mt-8">
           <form onSubmit={submitHandler} autoComplete="off">
             <div className="flex flex-col mb-2">
-              <div className="flex relative ">
-                <span className="rounded-l-md inline-flex  items-center px-3 border-t bg-white border-l border-b  border-gray-300 text-gray-500 shadow-sm text-sm">
+              <div className="flex relative">
+                <span className="rounded-l-md inline-flex items-center px-3 border-t bg-white border-l border-b border-gray-300 text-gray-500 shadow-sm text-sm">
                   <svg
                     width="15"
                     height="15"
@@ -60,15 +84,24 @@ const LoginPage = () => {
                   type="email"
                   value={email}
                   id="sign-in-email"
-                  className=" rounded-r-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  className={`rounded-r-lg flex-1 appearance-none border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 ${
+                    errors.email
+                      ? "focus:ring-red-500"
+                      : "focus:ring-purple-600"
+                  } focus:border-transparent`}
                   placeholder="Your email"
-                  onChange={(e)=>setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
             </div>
             <div className="flex flex-col mb-6">
-              <div className="flex relative ">
-                <span className="rounded-l-md inline-flex  items-center px-3 border-t bg-white border-l border-b  border-gray-300 text-gray-500 shadow-sm text-sm">
+              <div className="flex relative">
+                <span className="rounded-l-md inline-flex items-center px-3 border-t bg-white border-l border-b border-gray-300 text-gray-500 shadow-sm text-sm">
                   <svg
                     width="15"
                     height="15"
@@ -82,20 +115,31 @@ const LoginPage = () => {
                 <input
                   type="password"
                   value={password}
-                  id="sign-in-email"
-                  className=" rounded-r-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  id="sign-in-password"
+                  className={`rounded-r-lg flex-1 appearance-none border ${
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  } w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 ${
+                    errors.password
+                      ? "focus:ring-red-500"
+                      : "focus:ring-purple-600"
+                  } focus:border-transparent`}
                   placeholder="Your password"
-                  onChange={(e)=>setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              )}
             </div>
-            {isLoading && <div className='m-5 p-3'>
-              <Progress/>
-              </div>}
+            {isLoading && (
+              <div className="m-5 p-3">
+                <Progress />
+              </div>
+            )}
             <div className="flex w-full">
               <button
                 type="submit"
-                className="py-2 px-4  bg-purple-600 hover:bg-purple-700 focus:ring-purple-500 focus:ring-offset-purple-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+                className="py-2 px-4 bg-purple-600 hover:bg-purple-700 focus:ring-purple-500 focus:ring-offset-purple-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
               >
                 Login
               </button>
@@ -104,14 +148,15 @@ const LoginPage = () => {
         </div>
         <div className="flex items-center justify-center mt-6">
           <Link
-            to='/register'
+            to="/register"
             className="inline-flex items-center text-xs font-thin text-center text-gray-500 hover:text-gray-700 dark:text-gray-100 dark:hover:text-white"
           >
-            <span className="ml-2">You don&#x27;t have an account?</span>
+            <span className="ml-2">You don&rsquo;t have an account?</span>
           </Link>
         </div>
       </div>
     </div>
-  )
-}
-export default LoginPage
+  );
+};
+
+export default LoginPage;

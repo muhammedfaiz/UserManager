@@ -7,11 +7,11 @@ const Header = () => {
   const [profileToggle, setProfileToggle] = useState(false);
   const userInfo = useSelector((store) => store.auth.user);
   const dispatch = useDispatch();
-  const navigate =useNavigate();
+  const navigate = useNavigate();
   const handleLogout = () => {
     dispatch(logout());
     dispatch(reset());
-    navigate('/')
+    navigate("/");
   };
   return (
     <div>
@@ -40,16 +40,26 @@ const Header = () => {
                             : setProfileToggle(true)
                         }
                       >
-                        <svg
-                          width="30"
-                          fill="currentColor"
-                          height="30"
-                          className="dark:text-white text-black"
-                          viewBox="0 0 1792 1792"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M1523 1339q-22-155-87.5-257.5t-184.5-118.5q-67 74-159.5 115.5t-195.5 41.5-195.5-41.5-159.5-115.5q-119 16-184.5 118.5t-87.5 257.5q106 150 271 237.5t356 87.5 356-87.5 271-237.5zm-243-699q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm512 256q0 182-71 347.5t-190.5 286-285.5 191.5-349 71q-182 0-348-71t-286-191-191-286-71-348 71-348 191-286 286-191 348-71 348 71 286 191 191 286 71 348z"></path>
-                        </svg>
+                        {userInfo && userInfo.image ? (
+                          <span className="relative block">
+                            <img
+                              alt="profile"
+                              src={`http://localhost:8000/uploads/${userInfo.image}`}
+                              className="mx-auto object-cover rounded-full h-12 w-12 "
+                            />
+                          </span>
+                        ) : (
+                          <svg
+                            width="30"
+                            fill="currentColor"
+                            height="30"
+                            className="dark:text-white text-black"
+                            viewBox="0 0 1792 1792"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M1523 1339q-22-155-87.5-257.5t-184.5-118.5q-67 74-159.5 115.5t-195.5 41.5-195.5-41.5-159.5-115.5q-119 16-184.5 118.5t-87.5 257.5q106 150 271 237.5t356 87.5 356-87.5 271-237.5zm-243-699q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm512 256q0 182-71 347.5t-190.5 286-285.5 191.5-349 71q-182 0-348-71t-286-191-191-286-71-348 71-348 191-286 286-191 348-71 348 71 286 191 191 286 71 348z"></path>
+                          </svg>
+                        )}
                       </button>
                     </div>
                     <div
